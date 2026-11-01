@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Procurement Control Tower</title>
+<meta name="description" content="Demand forecasting, shortage prediction, supplier risk scoring and an AI reallocation optimizer for procurement teams." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== icon sprite ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><rect x="1" y="6" width="14" height="10" rx="1.5"/><path d="M15 10h4l3 3v3h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="i-dollar" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.5l2 11h10l2-8H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="4 12.5 9.5 18 20 6.5"/></symbol>
+</svg>
+
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <a class="brand" href="#/home" aria-label="Procurement Control Tower">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C8CFF"/><stop offset="1" stop-color="#3B3FD8"/></linearGradient></defs>
+        <rect width="32" height="32" rx="9" fill="url(#lg)"/>
+        <path d="M16 7l8 4.5v9L16 25l-8-4.5v-9z" fill="none" stroke="#F6F7FF" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M8 11.5L16 16l8-4.5M16 16v9" fill="none" stroke="#F6F7FF" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-text"><small>Procurement</small><b>Control Tower</b></span>
+    </a>
+
+    <nav class="nav" id="nav">
+      <div class="nav-title">Workspace</div>
+      <a href="#/home" data-route="home"><svg class="i"><use href="#i-layers"/></svg><span class="label">Home</span></a>
+      <a href="#/procurement" data-route="procurement"><svg class="i"><use href="#i-grid"/></svg><span class="label">Overview</span></a>
+      <a href="#/overview" data-route="overview"><svg class="i"><use href="#i-chart"/></svg><span class="label">Network health</span></a>
+      <a href="#/optimizer" data-route="optimizer"><svg class="i"><use href="#i-spark"/></svg><span class="label">AI Optimizer</span></a>
+
+      <div class="nav-title">Insights</div>
+      <a href="#/demand" data-route="demand"><svg class="i"><use href="#i-trend"/></svg><span class="label">Demand forecast</span></a>
+      <a href="#/shortages" data-route="shortages"><svg class="i"><use href="#i-box"/></svg><span class="label">Shortages</span><em class="count" id="nav-short"></em></a>
+      <a href="#/suppliers" data-route="suppliers"><svg class="i"><use href="#i-truck"/></svg><span class="label">Suppliers</span></a>
+      <a href="#/anomalies" data-route="anomalies"><svg class="i"><use href="#i-tag"/></svg><span class="label">Price anomalies</span></a>
+      <a href="#/analytics" data-route="analytics"><svg class="i"><use href="#i-chart"/></svg><span class="label">Analytics</span></a>
+    </nav>
+
+    <div class="side-card">
+      <div class="side-card-t"><span class="live-dot"></span>Dataset</div>
+      <div class="side-card-r"><span>Suppliers</span><b id="sc-sup">500</b></div>
+      <div class="side-card-r"><span>Components</span><b id="sc-comp">10,000</b></div>
+      <div class="side-card-r"><span>Purchase records</span><b id="sc-rec">50,000</b></div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <div class="main">
+    <header class="cmdbar">
+      <div class="crumb"><span>Control tower</span><i>/</i><b id="crumb">Home</b></div>
+
+      <div class="gsearch">
+        <svg class="i"><use href="#i-search"/></svg>
+        <input id="g-search" type="text" placeholder="Search components by name or SKU" autocomplete="off" />
+        <kbd>/</kbd>
+        <div class="suggest" id="g-suggest"></div>
+      </div>
+
+      <div class="status" id="status"><span class="dot"></span><span id="status-t">Connecting…</span></div>
+      <div class="avatar" title="Procurement manager">PM</div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============ HOME (3D landing) ============ -->
+      <section class="view" id="view-home">
+        <div class="hero" id="hero">
+          <i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i>
+          <div class="hero-t">
+            <h1>Buy the right parts before the line runs dry.</h1>
+            <p>Forecast demand, spot shortages early, and move orders to safer suppliers across 10,000 components, in one place.</p>
+            <div class="acts">
+              <a class="btn btn-p" href="#/procurement"><svg class="i"><use href="#i-clipboard"/></svg>Open overview</a>
+              <a class="btn" href="#/optimizer"><svg class="i"><use href="#i-spark"/></svg>Optimize an order</a>
+            </div>
+          </div>
+          <div class="scene" id="scene">
+            <div class="sway"><div class="scene-in" id="scene-in">
+              <svg viewBox="0 0 520 440" role="img" aria-label="Isometric stack of product crates on a pallet with a wire spool and connector floating above">
+                <defs>
+                  <symbol id="crate" viewBox="-40 -42 80 90" class="crate" overflow="visible">
+                    <polygon class="t" points="0,-36 38,-16 0,4 -38,-16"/><polygon class="l" points="-38,-16 0,4 0,46 -38,26"/><polygon class="r" points="0,4 38,-16 38,26 0,46"/>
+                    <polygon class="k" points="-8,-31 8,-23 -8,-15 -24,-23" opacity=".7"/><polygon class="k" points="4,22 22,13 22,26 4,35" opacity=".45"/>
+                  </symbol>
+                </defs>
+                <ellipse cx="260" cy="392" rx="190" ry="34" fill="#0F1133" opacity=".35"/>
+                <polygon points="260,318 410,362 260,406 110,362" fill="#F5C879"/><polygon points="110,362 260,406 260,422 110,378" fill="#D99A3C"/><polygon points="260,406 410,362 410,378 260,422" fill="#B97A25"/>
+                <use href="#crate" x="112" y="262" width="92" height="103" style="--t:#8F9BFF;--l:#5A5FE8;--r:#3B3FD8"/><use href="#crate" x="214" y="290" width="92" height="103" style="--t:#FFB09B;--l:#FF6B4A;--r:#E04E2E"/><use href="#crate" x="300" y="262" width="92" height="103" style="--t:#8CEBCC;--l:#1FC8A0;--r:#0F9E7C"/>
+                <g class="bob b3"><use href="#crate" x="206" y="184" width="92" height="103" style="--t:#FFD98A;--l:#FFB020;--r:#E8980A"/></g>
+                <g class="bob"><use href="#crate" x="262" y="96" width="76" height="85" style="--t:#8F9BFF;--l:#5A5FE8;--r:#3B3FD8"/></g>
+                <g class="bob b2" transform="translate(70 120)"><ellipse cx="0" cy="22" rx="30" ry="12" fill="#C5CBFF"/><rect x="-30" y="-14" width="60" height="36" fill="#E3E6FF"/><ellipse cx="0" cy="-14" rx="30" ry="12" fill="#F6F7FF"/><ellipse cx="0" cy="-14" rx="12" ry="5" fill="#2A2DB0"/><path d="M-30 -2c20 8 40 8 60 0M-30 8c20 8 40 8 60 0" stroke="#FF6B4A" stroke-width="3" fill="none"/></g>
+                <g class="bob b4" transform="translate(430 190)"><g class="spin"><rect x="-22" y="-22" width="44" height="44" rx="8" fill="#F6F7FF"/><rect x="-14" y="-14" width="28" height="28" rx="4" fill="#1FC8A0"/></g><g stroke="#F6F7FF" stroke-width="3" stroke-linecap="round"><path d="M-22 -10h-10M-22 0h-10M-22 10h-10M22 -10h10M22 0h10M22 10h10"/></g></g>
+              </svg>
+              <div class="tag3d t1"><i></i><span><b id="h-comp">10,000</b><br>components tracked</span></div>
+              <div class="tag3d t2"><i></i><span><b id="h-sup">500</b><br>suppliers scored</span></div>
+              <div class="tag3d t3"><i></i><span><b id="h-late">0%</b><br>orders delayed</span></div>
+            </div></div>
+          </div>
+        </div>
+        <div class="tiles">
+          <a class="tile" href="#/procurement"><span class="ti"><svg class="i"><use href="#i-grid"/></svg></span><b>Overview</b><span class="tv" data-h="spend">—</span><span>Total spend across the buying cycle</span></a>
+          <a class="tile" href="#/shortages"><span class="ti"><svg class="i"><use href="#i-box"/></svg></span><b>Shortages</b><span class="tv" data-h="short">—</span><span>Components predicted to run short</span></a>
+          <a class="tile" href="#/suppliers"><span class="ti"><svg class="i"><use href="#i-truck"/></svg></span><b>Suppliers</b><span class="tv" data-h="risk">—</span><span>Suppliers at risk of late delivery</span></a>
+          <a class="tile" href="#/optimizer"><span class="ti"><svg class="i"><use href="#i-spark"/></svg></span><b>AI Optimizer</b><span class="tv">Split orders</span><span>Shift volume to a safer alternate</span></a>
+        </div>
+      </section>
+
+      <!-- ============ OVERVIEW (buying cycle) ============ -->
+      <section class="view" id="view-procurement">
+        <div class="p-head">
+          <div>
+            <h1>Overview</h1>
+            <p>From demand to delivery, where every stage of the buying cycle stands today and what needs a decision.</p>
+          </div>
+          <div class="acts">
+            <a class="btn" href="#/shortages"><svg class="i"><use href="#i-box"/></svg>Review shortages</a>
+            <a class="btn btn-p" href="#/optimizer"><svg class="i"><use href="#i-spark"/></svg>Optimize an order</a>
+          </div>
+        </div>
+
+        <div class="cycle" id="p-cycle" aria-label="Buying cycle"></div>
+
+        <div class="p-grid">
+          <div class="card rise">
+            <div class="card-h"><h3>Reorder queue</h3><a class="link" href="#/shortages">All shortages <svg class="i"><use href="#i-arrow"/></svg></a></div>
+            <div class="card-b tight" id="p-short"></div>
+          </div>
+          <div class="stack">
+            <div class="card rise">
+              <div class="card-h"><h3>Suppliers to review</h3><a class="link" href="#/suppliers">View all <svg class="i"><use href="#i-arrow"/></svg></a></div>
+              <div class="card-b tight" id="p-sup"></div>
+            </div>
+            <div class="card rise">
+              <div class="card-h"><h3>Price checks</h3><a class="link" href="#/anomalies">View all <svg class="i"><use href="#i-arrow"/></svg></a></div>
+              <div class="card-b tight" id="p-flags"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ OVERVIEW ============ -->
+      <section class="view" id="view-overview">
+        <div class="page-h">
+          <div>
+            <h1>Network health</h1>
+            <p>Live health of the whole supply network — spend, delivery performance and the risks behind it.</p>
+          </div>
+          <a class="btn btn-p" href="#/optimizer"><svg class="i"><use href="#i-spark"/></svg>Open AI Optimizer</a>
+        </div>
+
+        <div class="kpis three" id="kpi-grid"></div>
+
+        <div class="grid row-a">
+          <div class="card rise net">
+            <div class="card-h"><h3>Supply network</h3><span class="muted-s">Suppliers → hub → plants</span></div>
+            <div class="card-b">
+              <svg viewBox="0 0 760 250" role="img" aria-label="Illustration of suppliers feeding a distribution hub that serves plants">
+                <defs>
+                  <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="#C5CBFF"/></pattern>
+                  <linearGradient id="roof" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C8CFF"/><stop offset="1" stop-color="#3B3FD8"/></linearGradient>
+                  <g id="sup-tile">
+                    <rect x="52" y="34" width="56" height="56" rx="14" fill="#F6F7FF" stroke="#C5CBFF"/>
+                    <path d="M65 76V58l9 6v-6l9 6V52h8v24z" fill="#3B3FD8" opacity=".92"/>
+                  </g>
+                  <g id="plant-tile">
+                    <rect x="652" y="34" width="56" height="56" rx="14" fill="#F6F7FF" stroke="#BFEBDD"/>
+                    <path d="M666 56l14-7 14 7v14l-14 7-14-7z" fill="none" stroke="#1FB58F" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M666 56l14 7 14-7M680 63v14" fill="none" stroke="#1FB58F" stroke-width="2" stroke-linecap="round"/>
+                  </g>
+                  <g id="truck">
+                    <rect x="-9" y="-5" width="11" height="9" rx="2" fill="#3B3FD8"/>
+                    <path d="M2-3h5l3 3v4H2z" fill="#2A2DB0"/>
+                    <circle cx="-4" cy="5" r="1.8" fill="#1B1D5E"/><circle cx="6" cy="5" r="1.8" fill="#1B1D5E"/>
+                  </g>
+                </defs>
+
+                <rect width="760" height="250" rx="12" fill="url(#dots)"/>
+                <g font-size="10.5" font-weight="700" letter-spacing="1.6" fill="#6F76B8" text-anchor="middle">
+                  <text x="80" y="20">SUPPLIERS</text><text x="380" y="20">DISTRIBUTION HUB</text><text x="680" y="20">PLANTS</text>
+                </g>
+
+                <g fill="none" stroke-width="2" stroke-linecap="round">
+                  <path id="r1" class="route" d="M108 62C220 62 250 125 330 125" stroke="#8F9BFF"/>
+                  <path id="r2" class="route" d="M108 125H330" stroke="#1FB58F"/>
+                  <path id="r3" class="route" d="M108 188C220 188 250 125 330 125" stroke="#E0A23A"/>
+                  <path id="r4" class="route" d="M430 125C540 125 560 62 652 62" stroke="#8F9BFF"/>
+                  <path id="r5" class="route" d="M430 125C540 125 560 188 652 188" stroke="#8F9BFF"/>
+                </g>
+
+                <use href="#sup-tile"/><use href="#sup-tile" y="63"/><use href="#sup-tile" y="126"/>
+                <circle cx="80" cy="188" r="36" fill="none" stroke="#E8590C" stroke-width="1.5">
+                  <animate attributeName="r" values="34;48;34" dur="2.6s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values=".75;0;.75" dur="2.6s" repeatCount="indefinite"/>
+                </circle>
+
+                <!-- hub -->
+                <path d="M322 96L380 60l58 36z" fill="url(#roof)"/>
+                <rect x="330" y="96" width="100" height="62" rx="4" fill="#F6F7FF" stroke="#C5CBFF"/>
+                <rect x="342" y="118" width="22" height="40" fill="#E3E6FF" stroke="#A9B4FF"/>
+                <rect x="369" y="118" width="22" height="40" fill="#E3E6FF" stroke="#A9B4FF"/>
+                <rect x="396" y="118" width="22" height="40" fill="#E3E6FF" stroke="#A9B4FF"/>
+                <circle cx="380" cy="82" r="5" fill="#F6F7FF" opacity=".9"/>
+
+                <use href="#plant-tile"/><use href="#plant-tile" y="126"/>
+
+                <g transform="translate(122,214)"><rect width="104" height="22" rx="11" fill="#FFE9C7" stroke="#F5C879"/><text x="52" y="15" text-anchor="middle" font-size="11" font-weight="600" fill="#9A4A00">34% delay risk</text></g>
+                <g transform="translate(122,98)"><rect width="104" height="22" rx="11" fill="#D2F3E8" stroke="#9FE0CC"/><text x="52" y="15" text-anchor="middle" font-size="11" font-weight="600" fill="#0E7A5F">Safer alternate</text></g>
+
+                <use href="#truck"><animateMotion dur="5.2s" begin="-2.5s" repeatCount="indefinite" rotate="auto"><mpath href="#r1"/></animateMotion></use>
+                <use href="#truck"><animateMotion dur="4.4s" begin="-1s" repeatCount="indefinite" rotate="auto"><mpath href="#r2"/></animateMotion></use>
+                <use href="#truck"><animateMotion dur="6s" begin="-2s" repeatCount="indefinite" rotate="auto"><mpath href="#r3"/></animateMotion></use>
+                <use href="#truck"><animateMotion dur="5s" begin="-.5s" repeatCount="indefinite" rotate="auto"><mpath href="#r4"/></animateMotion></use>
+                <use href="#truck"><animateMotion dur="5.6s" begin="-1.6s" repeatCount="indefinite" rotate="auto"><mpath href="#r5"/></animateMotion></use>
+              </svg>
+              <div class="net-stats">
+                <div class="mini"><b id="net-s">500</b><span>Suppliers scored</span></div>
+                <div class="mini"><b id="net-c">10,000</b><span>Components tracked</span></div>
+                <div class="mini"><b id="net-o">50,000</b><span>Purchase orders analysed</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card rise">
+            <div class="card-h"><h3>Highest-risk suppliers</h3><a class="link" href="#/suppliers">View all <svg class="i"><use href="#i-arrow"/></svg></a></div>
+            <div class="card-b tight" id="ov-suppliers"></div>
+          </div>
+        </div>
+
+        <div class="grid row-a">
+          <div class="card rise">
+            <div class="card-h"><h3>Spend &amp; delayed orders · last 12 months</h3><a class="link" href="#/analytics">Open analytics <svg class="i"><use href="#i-arrow"/></svg></a></div>
+            <div class="card-b"><div class="chart"><canvas id="ch-trend"></canvas></div></div>
+          </div>
+          <div class="card rise">
+            <div class="card-h"><h3>Top predicted shortages</h3><a class="link" href="#/shortages">View all <svg class="i"><use href="#i-arrow"/></svg></a></div>
+            <div class="card-b tight" id="ov-shortages"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ OPTIMIZER ============ -->
+      <section class="view" id="view-optimizer">
+        <div class="page-h">
+          <div>
+            <h1>AI Optimizer</h1>
+            <p>Pick a supplier at risk. The agent prices a partial reallocation to a safer alternate in the same category.</p>
+          </div>
+        </div>
+
+        <div class="grid row-c">
+          <div class="stack">
+            <div class="card rise">
+              <div class="card-h"><h3>Run optimization</h3></div>
+              <div class="card-b">
+                <label class="lbl" for="opt-select">Supplier</label>
+                <select class="field" id="opt-select"><option>Loading suppliers…</option></select>
+                <button class="btn btn-p block" id="opt-run"><svg class="i"><use href="#i-spark"/></svg>Optimize order split</button>
+                <div class="lbl mt">Agent suggestions</div>
+                <div class="chips" id="opt-quick"></div>
+              </div>
+            </div>
+            <div class="card rise">
+              <div class="card-h"><h3>Recent runs</h3></div>
+              <div class="card-b tight" id="opt-recent"><div class="state sm">No runs yet.</div></div>
+            </div>
+          </div>
+
+          <div class="card rise stage-card">
+            <div class="card-b" id="opt-stage">
+              <div class="empty">
+                <svg viewBox="0 0 200 140" aria-hidden="true">
+                  <rect x="20" y="86" width="160" height="10" rx="5" fill="#CDD2F5"/>
+                  <path d="M60 86V52l40-22 40 22v34z" fill="#F6F7FF" stroke="#C5CBFF" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M60 52l40 22 40-22M100 74v36" fill="none" stroke="#A9B4FF" stroke-width="2"/>
+                  <g fill="#3B3FD8"><path d="M156 20l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/></g>
+                  <g fill="#1FB58F"><path d="M38 34l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g>
+                </svg>
+                <h3>No analysis yet</h3>
+                <p>Select a supplier and run the optimizer to see the recommended order split, projected risk reduction and cost impact.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DEMAND ============ -->
+      <section class="view" id="view-demand">
+        <div class="page-h">
+          <div>
+            <h1>Demand forecast</h1>
+            <p>Order history projected forward with a linear trend, checked against stock and reorder point.</p>
+          </div>
+          <div class="seg" id="dm-horizon" role="group" aria-label="Forecast horizon">
+            <button data-v="3">3 mo</button><button data-v="6" class="on">6 mo</button><button data-v="9">9 mo</button>
+          </div>
+        </div>
+
+        <div class="card rise toolbar">
+          <div class="inline-search">
+            <svg class="i"><use href="#i-search"/></svg>
+            <input id="dm-search" type="text" placeholder="Find a component — e.g. Ring Terminal, CMP-000206" autocomplete="off" />
+            <div class="suggest" id="dm-suggest"></div>
+          </div>
+          <div class="chips" id="dm-quick"></div>
+        </div>
+
+        <div class="grid row-a">
+          <div class="card rise">
+            <div class="card-h"><h3 id="dm-title">Select a component</h3><span class="muted-s" id="dm-sku"></span></div>
+            <div class="card-b"><div class="chart tall"><canvas id="ch-demand"></canvas></div></div>
+          </div>
+          <div class="card rise" id="dm-detail"><div class="state">Pick a component to see stock cover and its forecast.</div></div>
+        </div>
+      </section>
+
+      <!-- ============ SHORTAGES ============ -->
+      <section class="view" id="view-shortages">
+        <div class="page-h">
+          <div>
+            <h1>Shortages</h1>
+            <p>Components projected to run out before the next delivery lands — days of cover versus supplier lead time.</p>
+          </div>
+        </div>
+
+        <div class="card rise">
+          <div class="card-h wrap-h">
+            <div class="seg" id="sh-filter" role="group" aria-label="Criticality filter"></div>
+            <span class="muted-s" id="sh-count"></span>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Component</th><th>Category</th><th>Criticality</th><th class="num">Stock / Reorder</th><th class="num">Lead-time demand</th><th>Primary supplier</th><th>Stockout risk</th><th></th></tr></thead>
+              <tbody id="sh-body"></tbody>
+            </table>
+          </div>
+          <div class="card-f"><button class="btn" id="sh-more">Show more</button></div>
+        </div>
+      </section>
+
+      <!-- ============ SUPPLIERS ============ -->
+      <section class="view" id="view-suppliers">
+        <div class="page-h">
+          <div>
+            <h1>Suppliers</h1>
+            <p>Delay probability blends the last 90 days with full history, combined with quality and price volatility into one risk score.</p>
+          </div>
+        </div>
+
+        <div class="kpis small" id="sp-summary"></div>
+
+        <div class="card rise">
+          <div class="card-h wrap-h filters">
+            <div class="inline-search"><svg class="i"><use href="#i-search"/></svg><input id="sp-search" type="text" placeholder="Filter by supplier name" autocomplete="off" /></div>
+            <select class="field compact" id="sp-cat"><option value="">All categories</option></select>
+            <select class="field compact" id="sp-region"><option value="">All regions</option></select>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Supplier</th><th>Region</th><th>Category</th><th class="num">Delay prob.</th><th class="num">Avg delay</th><th class="num">Lead time</th><th>Risk score</th></tr></thead>
+              <tbody id="sp-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANOMALIES ============ -->
+      <section class="view" id="view-anomalies">
+        <div class="page-h">
+          <div>
+            <h1>Price anomalies</h1>
+            <p>Each unit price is compared with that component's own purchase history. Anything beyond two standard deviations is flagged.</p>
+          </div>
+        </div>
+
+        <div class="kpis small" id="an-summary"></div>
+
+        <div class="grid row-d">
+          <div class="card rise">
+            <div class="card-h"><h3>Largest deviations</h3><span class="muted-s">% vs expected price</span></div>
+            <div class="card-b"><div class="chart tall"><canvas id="ch-anom"></canvas></div></div>
+          </div>
+          <div class="card rise">
+            <div class="card-h wrap-h">
+              <h3>Flagged line items</h3>
+              <div class="seg" id="an-filter" role="group" aria-label="Direction">
+                <button data-v="all" class="on">All</button><button data-v="over">Overpaid</button><button data-v="under">Underpriced</button>
+              </div>
+            </div>
+            <div class="tbl-wrap short">
+              <table class="tbl">
+                <thead><tr><th>Component</th><th>Supplier</th><th class="num">Paid</th><th class="num">Expected</th><th class="num">Deviation</th></tr></thead>
+                <tbody id="an-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANALYTICS ============ -->
+      <section class="view" id="view-analytics">
+        <div class="page-h">
+          <div>
+            <h1>Analytics</h1>
+            <p>Deeper cuts of the same dataset, one lens per tab.</p>
+          </div>
+        </div>
+
+        <div class="card rise">
+          <div class="tabs" id="ax-tabs" role="tablist">
+            <button class="on" data-tab="spend" role="tab">Spend &amp; delivery</button>
+            <button data-tab="category" role="tab">Category mix</button>
+            <button data-tab="shortage" role="tab">Shortage breakdown</button>
+            <button data-tab="risk" role="tab">Supplier risk</button>
+          </div>
+
+          <div class="panel on" id="ax-spend">
+            <div class="mini-stats" id="ax-spend-stats"></div>
+            <div class="chart xl"><canvas id="ch-spend"></canvas></div>
+          </div>
+
+          <div class="panel" id="ax-category">
+            <div class="grid row-b flat">
+              <div><h4 class="sub">Components by category</h4><div class="chart"><canvas id="ch-cat"></canvas></div></div>
+              <div><h4 class="sub">Average unit cost (₹)</h4><div class="chart"><canvas id="ch-cat-cost"></canvas></div></div>
+            </div>
+          </div>
+
+          <div class="panel" id="ax-shortage">
+            <h4 class="sub">Predicted shortages by category and criticality <span class="muted-s">· top 300 highest-priority items</span></h4>
+            <div class="chart xl"><canvas id="ch-short"></canvas></div>
+          </div>
+
+          <div class="panel" id="ax-risk">
+            <div class="grid row-b flat">
+              <div><h4 class="sub">Risk score distribution <span class="muted-s">· top 40 suppliers</span></h4><div class="chart"><canvas id="ch-hist"></canvas></div></div>
+              <div><h4 class="sub">Lead time vs delay probability <span class="muted-s">· bubble = risk</span></h4><div class="chart"><canvas id="ch-scatter"></canvas></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== supplier drawer ===== -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
